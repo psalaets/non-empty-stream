@@ -4,28 +4,11 @@ Passthrough stream that emits error if no data goes through it.
 
 ## Usage
 
-### Default mode
-
-When streaming Strings/Buffers through it.
-
 ```js
 var nonEmptyStream = require('non-empty-stream');
 
 source
   .pipe(nonEmptyStream())
-  .pipe(...);
-```
-
-### Object mode
-
-When streaming anything *but* Strings/Buffers through it.
-
-```js
-var nonEmptyStream = require('non-empty-stream');
-
-gulp.src('some/non-existent/file')
-  .pipe(nonEmptyStream.obj())
-  // or use gulp-plumber
   .on('error', function (error) {
     console.error(error);
   })
