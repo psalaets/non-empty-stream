@@ -1,14 +1,19 @@
 {
   "name": "non-empty-stream",
   "version": "1.0.0",
-  "description": "",
+  "description": "Passthrough stream that emits error if no data goes through it",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["through", "stream", "non", "empty", "passthrough"],
+  "author": "Paul Salaets <psalaets@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/psalaets/non-empty-stream",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/psalaets/non-empty-stream.git"
+  },
   "dependencies": {
     "through2": "^2.0.1",
     "xtend": "^4.0.1"
