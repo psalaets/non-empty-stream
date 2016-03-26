@@ -21,7 +21,7 @@ source
 
 Creates a passthrough stream that will emit an error if it is ended without any data passing through it.
 
-`options` - Optional object containing options accepted by [through2](https://www.npmjs.com/package/through2);
+`options` - Optional object containing options accepted by [through2](https://www.npmjs.com/package/through2).
 
 ### nonEmptyStream.obj(options)
 
