@@ -3,43 +3,84 @@ var test = require('tape');
 var nonEmptyStream = require('./');
 var through2 = require('through2');
 
-test('acts as passthrough stream', function (t) {
-  t.plan(1);
+test('in default mode', function (t) {
+  t.test('acts as passthrough stream', function (st) {
+    st.plan(1);
 
-  var source = through2();
-  var nonEmpty = nonEmptyStream();
+    var source = through2();
+    var nonEmpty = nonEmptyStream();
 
-  source
-    .pipe(nonEmpty)
-    .pipe(collectChunks(function (chunks) {
-      t.deepEqual(chunks, ['a', 'b']);
-    }));
+    source
+      .pipe(nonEmpty)
+      .pipe(collectChunks(function (chunks) {
+        st.deepEqual(chunks, ['a', 'b']);
+      }));
 
-  source.write('a');
-  source.write('b');
-  source.end();
+    source.write('a');
+    source.write('b');
+    source.end();
+  });
+
+  t.test('emits error when ended with no upstream data', function (st) {
+    st.plan(1);
+
+    var source = through2();
+    var nonEmpty = nonEmptyStream();
+
+    source
+      .pipe(nonEmpty)
+      .on('error', function (error) {
+        st.equal(error.message, 'No data from upstream');
+      });
+
+    source.end();
+  });
 });
 
-test('emits error when ended with no upstream data', function (t) {
-  t.plan(1);
+test('in object mode', function (t) {
+  t.test('acts as passthrough stream', function (st) {
+    st.plan(1);
 
-  var source = through2();
-  var nonEmpty = nonEmptyStream();
+    var source = through2.obj();
+    var nonEmpty = nonEmptyStream.obj();
 
-  source
-    .pipe(nonEmpty)
-    .on('error', function (error) {
-      t.equal(error.message, 'No data from upstream');
-    });
+    source
+      .pipe(nonEmpty)
+      .pipe(collectChunks(function (chunks) {
+        st.deepEqual(chunks, [{name: 'jill'}, {name: 'bob'}]);
+      }, true));
 
-  source.end();
+    source.write({name: 'jill'});
+    source.write({name: 'bob'});
+    source.end();
+  });
+
+  t.test('emits error when ended with no upstream data', function (st) {
+    st.plan(1);
+
+    var source = through2.obj();
+    var nonEmpty = nonEmptyStream.obj();
+
+    source
+      .pipe(nonEmpty)
+      .on('error', function (error) {
+        st.equal(error.message, 'No data from upstream');
+      });
+
+    source.end();
+  });
 });
+
 
 // returns stream that calls fn wth array of chunks when stream is ending
-function collectChunks(fn) {
+function collectChunks(fn, objectMode) {
   var chunks = [];
-  return through2(function (chunk, encoding, cb) {
-    chunks.push(chunk.toString());
+  var options = {
+    objectMode: objectMode || false
+  };
+
+  return through2(options, function (chunk, encoding, cb) {
+    chunks.push(objectMode ? chunk : chunk.toString());
     cb(null, chunk);
   }, function (cb) {
     fn(chunks);
